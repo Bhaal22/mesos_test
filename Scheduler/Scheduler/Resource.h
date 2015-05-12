@@ -6,16 +6,6 @@
 
 namespace scheduler
 {
-	struct resource
-	{
-		int index;
-		int units_available;
-
-		resource(int index, int units_available)
-			: index(index), units_available(units_available)
-		{ }
-	};
-
 	struct job
 	{
 		int index;
@@ -26,9 +16,28 @@ namespace scheduler
 			: index(index), units_needed(units_needed), time_step(time_step)
 		{}
 
-		void compute()
+		void compute() const
 		{
+			std::cout << "Starting job#" << index << std::endl;
 			std::this_thread::sleep_for(std::chrono::seconds(units_needed));
+			std::cout << "job#" << index << " finished" << std::endl;
+
+		}
+	};
+
+	struct resource
+	{
+		int index;
+		int units_available;
+		bool used;
+
+		resource(int index, int units_available)
+			: index(index), units_available(units_available), used(false)
+		{ }
+
+		void run(const job &currentJob)
+		{
+			currentJob.compute();
 		}
 	};
 }

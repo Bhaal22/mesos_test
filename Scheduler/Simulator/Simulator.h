@@ -3,13 +3,14 @@
 
 #include <list>
 #include "Scheduler.h"
+#include "Strategies.h"
 
 class Simulator
 {
 private:
-	scheduler::Scheduler::resourceStream generate_resources()
+	scheduler::resourceStream generate_resources()
 	{ 
-		scheduler::Scheduler::resourceStream stream;
+		scheduler::resourceStream stream;
 
 		stream.push_back(scheduler::resource(2, 3));
 		stream.push_back(scheduler::resource(7, 1));
@@ -20,9 +21,9 @@ private:
 		return stream;
 	}
 
-	scheduler::Scheduler::jobStream generate_jobs()
+	scheduler::jobStream generate_jobs()
 	{ 
-		scheduler::Scheduler::jobStream stream;
+		scheduler::jobStream stream;
 
 		stream.push_back(scheduler::job(1, 3, 4));
 		stream.push_back(scheduler::job(2, 1, 4));
@@ -44,13 +45,13 @@ public:
 
 	void start()
 	{
-		scheduler::Scheduler::resourceStream resourceStream = generate_resources();
-		scheduler::Scheduler::jobStream jobStream = generate_jobs();
+		scheduler::resourceStream resourceStream = generate_resources();
+		scheduler::jobStream jobStream = generate_jobs();
 
 
-		scheduler::Scheduler sched(resourceStream, jobStream);
+		scheduler::Scheduler<scheduler::strategies::asyncJobRunner> sched(resourceStream, jobStream);
 		
-
+		sched.wait();
 		sched.assign();
 	}
 };

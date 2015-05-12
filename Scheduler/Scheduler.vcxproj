@@ -85,6 +85,7 @@
   <ItemGroup>
     <ClInclude Include="Scheduler\Resource.h" />
     <ClInclude Include="Scheduler\Scheduler.h" />
+    <ClInclude Include="Scheduler\Strategies.h" />
     <ClInclude Include="Simulator\Simulator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

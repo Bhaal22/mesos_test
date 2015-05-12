@@ -7,47 +7,44 @@
 #include <algorithm>
 #include <functional>
 
+#include <future>
+
 #include "Resource.h"
+#include "Strategies.h"
 
 namespace scheduler
 {
-	struct assigner : std::binary_function < resource, job, bool >
-	{
-		bool operator() (const resource &currentResource, const job &currentJob) const
-		{
-			return true;
-		}
-	};
+	typedef std::list<resource> resourceStream;
+	typedef std::list<job> jobStream;
 
+	template<typename JobRunningStrategy, typename AssignmentStrategy = strategies::assigner>
 	class Scheduler
 	{
 	public:
-		typedef std::list<resource> resourceStream;
-		typedef std::list<job> jobStream;
+		typedef typename JobRunningStrategy::type runner;
+		typedef typename AssignmentStrategy::type assignment;
 
 	private:
 		resourceStream _resources;
 		jobStream _jobs;
 
-		bool assign(const job currentJob)
+		std::list<std::future<void>> _futures;
+
+		resourceStream::const_iterator assign(const job currentJob)
 		{
 			bool assigned = false;
 
 			resourceStream::const_iterator resourceIterator = std::find_if(_resources.begin(),
 				_resources.end(),
-				std::bind2nd(assigner(), currentJob));
+				std::bind2nd(assignment(), currentJob));
 
 			if (resourceIterator != _resources.end())
 			{
-				assigned = true;
-
 				std::cout << "job#" << currentJob.index << " assigned on node#" << resourceIterator->index << " for #" << currentJob.time_step << "units of time" << std::endl;
-
-				_resources.erase(resourceIterator);
 			}
 
 
-			return assigned;
+			return resourceIterator;
 		}
 
 	public:
@@ -61,21 +58,31 @@ namespace scheduler
 
 		void assign()
 		{
+			runner _runner;
 			while (!_jobs.empty())
 			{
 				job currentJob = _jobs.front();
 				_jobs.pop_front();
 
-
-				while (!assign(currentJob))
+				resourceStream::const_iterator resourceIterator = assign(currentJob);
+				while (resourceIterator == _resources.end())
 				{
 					_jobs.push_back(currentJob);
 					currentJob = _jobs.front();
 					_jobs.pop_front();
 				}
 
-				currentJob.compute();
+				resource currentResource = *resourceIterator;
+				_futures.push_back(_runner.run(currentJob, currentResource));
 			}
+		}
+
+		void wait()
+		{
+			
+			std::for_each(_futures.begin(),
+						  _futures.end(),
+						  std::mem_fun_ref(&std::future<void>::wait));
 		}
 	};
 }
