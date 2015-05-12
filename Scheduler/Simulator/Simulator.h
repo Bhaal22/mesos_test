@@ -11,12 +11,26 @@ private:
 	{ 
 		scheduler::Scheduler::resourceStream stream;
 
+		stream.push_back(scheduler::resource(2, 3));
+		stream.push_back(scheduler::resource(7, 1));
+		stream.push_back(scheduler::resource(1, 23));
+		stream.push_back(scheduler::resource(8, 5));
+		stream.push_back(scheduler::resource(2, 8));
+
 		return stream;
 	}
 
 	scheduler::Scheduler::jobStream generate_jobs()
 	{ 
 		scheduler::Scheduler::jobStream stream;
+
+		stream.push_back(scheduler::job(1, 3, 4));
+		stream.push_back(scheduler::job(2, 1, 4));
+		stream.push_back(scheduler::job(3, 4, 7));
+		stream.push_back(scheduler::job(4, 1, 3));
+		stream.push_back(scheduler::job(5, 5, 4));
+		stream.push_back(scheduler::job(6, 9, 3));
+
 
 		return stream;
 	}

@@ -1,7 +1,7 @@
 #ifndef __SCHEDULER_H
 #define __SCHEDULER_H
 
-#include <cstdio>
+#include <iostream>
 #include <list>
 
 #include <algorithm>
@@ -11,7 +11,7 @@
 
 namespace scheduler
 {
-	struct assigner : std::binary_function<resource, job, bool>
+	struct assigner : std::binary_function < resource, job, bool >
 	{
 		bool operator() (const resource &currentResource, const job &currentJob) const
 		{
@@ -29,9 +29,29 @@ namespace scheduler
 		resourceStream _resources;
 		jobStream _jobs;
 
+		bool assign(const job currentJob)
+		{
+			bool assigned = false;
+
+			resourceStream::const_iterator resourceIterator = std::find_if(_resources.begin(),
+				_resources.end(),
+				std::bind2nd(assigner(), currentJob));
+
+			if (resourceIterator != _resources.end())
+			{
+				assigned = true;
+
+				std::cout << "job#" << currentJob.index << " assigned on node#" << resourceIterator->index << " for #" << currentJob.time_step << "units of time" << std::endl;
+
+				_resources.erase(resourceIterator);
+			}
+
+
+			return assigned;
+		}
 
 	public:
-		Scheduler(const resourceStream &resources, const jobStream &jobs) : 
+		Scheduler(const resourceStream &resources, const jobStream &jobs) :
 			_resources(resources), _jobs(jobs)
 		{ }
 
@@ -41,23 +61,20 @@ namespace scheduler
 
 		void assign()
 		{
-			job currentJob = _jobs.front();
-			_jobs.pop_front();
-
-
-			//_resources.remove_if()
-			resourceStream::const_iterator res = std::find_if(_resources.begin(),
-															  _resources.end(),
-															  std::bind2nd(assigner(), currentJob));
-
-			if (res != _resources.end())
+			while (!_jobs.empty())
 			{
+				job currentJob = _jobs.front();
+				_jobs.pop_front();
 
-			}
-			else
-			{
-				//job cannot be run currently
-				//pass to next job
+
+				while (!assign(currentJob))
+				{
+					_jobs.push_back(currentJob);
+					currentJob = _jobs.front();
+					_jobs.pop_front();
+				}
+
+				currentJob.compute();
 			}
 		}
 	};
