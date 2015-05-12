@@ -51,8 +51,9 @@ public:
 
 		scheduler::Scheduler<scheduler::strategies::asyncJobRunner> sched(resourceStream, jobStream);
 		
+		sched.start();
+
 		sched.wait();
-		sched.assign();
 	}
 };
 

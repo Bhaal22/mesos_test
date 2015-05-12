@@ -56,7 +56,7 @@ namespace scheduler
 		{ }
 
 
-		void assign()
+		void start()
 		{
 			runner _runner;
 			while (!_jobs.empty())
