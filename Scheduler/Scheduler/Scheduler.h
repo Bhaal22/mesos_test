@@ -14,8 +14,6 @@
 
 namespace scheduler
 {
-	typedef std::list<resource> resourceStream;
-	typedef std::list<job> jobStream;
 
 	template<typename JobRunningStrategy, typename AssignmentStrategy = strategies::assigner>
 	class Scheduler
@@ -41,7 +39,6 @@ namespace scheduler
 				std::cout << "job#" << currentJob.index << " assigned on node#" << resourceIterator->index << " for #" << currentJob.time_step << "units of time" << std::endl;
 			}
 
-
 			return resourceIterator;
 		}
 
@@ -63,15 +60,18 @@ namespace scheduler
 				_jobs.pop_front();
 
 				resourceStream::iterator resourceIterator = assign(currentJob);
+				std::cout << "Trying to find out a resource for job#" << currentJob.index << "#" << currentJob.units_needed << std::endl;
 				while (resourceIterator == _resources.end())
 				{
+					std::this_thread::sleep_for(std::chrono::seconds(1));
 					_jobs.push_back(currentJob);
 					currentJob = _jobs.front();
 					_jobs.pop_front();
+
+					resourceIterator = assign(currentJob);
 				}
 
-				resource &currentResource = *resourceIterator;
-				_futures.push_back(_runner.run(currentJob, currentResource));
+				_futures.push_back(_runner.run(currentJob, resourceIterator));
 			}
 		}
 

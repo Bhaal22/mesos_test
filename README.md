@@ -6,6 +6,7 @@ TODO:
  - fix waiting for futures [OK]
  - simpleRunner does not work correctly with resource status
  - need to sync on resource.used attribute [OK]
+ - when a Task is finished, it does to set resource as available [OK]
 
 
 Very simple API for Simulator :

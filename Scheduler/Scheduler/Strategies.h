@@ -13,9 +13,9 @@ namespace scheduler
 		{
 			typedef simpleJobRunner type;
 
-			void run(const job &currentJob, resource &currentResource)
+			void run(const job &currentJob, resource *currentResource)
 			{
-				currentResource.run(currentJob);
+				currentResource->run(currentJob);
 			}
 		};
 
@@ -28,9 +28,9 @@ namespace scheduler
 			asyncJobRunner()
 			{ }
 
-			std::future<void> run(const job &currentJob, resource &currentResource)
+			std::future<void> run(const job &currentJob, resourceStream::iterator currentResource)
 			{
-				currentResource.set_in_use(true);
+				currentResource->set_in_use(true);
 				std::future<void> future = std::async(std::launch::async, &resource::run, currentResource, currentJob);
 
 				return future;

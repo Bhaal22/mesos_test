@@ -63,6 +63,9 @@ namespace scheduler
 			set_in_use(false);
 		}
 	};
+
+	typedef std::list<resource> resourceStream;
+	typedef std::list<job> jobStream;
 }
 
 #endif

@@ -16,7 +16,7 @@ private:
 		stream.push_back(scheduler::resource(7, 1));
 		stream.push_back(scheduler::resource(1, 23));
 		stream.push_back(scheduler::resource(8, 5));
-		stream.push_back(scheduler::resource(2, 8));
+		stream.push_back(scheduler::resource(2, 10));
 
 		return stream;
 	}
