@@ -4,6 +4,8 @@ TODO:
  - read input file for Resources / Jobs
  - make Resources dynamic following a dedicated scenario
  - fix waiting for futures [OK]
+ - simpleRunner does not work correctly with resource status
+ - need to sync on resource.used attribute [OK]
 
 
 Very simple API for Simulator :

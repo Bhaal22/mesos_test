@@ -30,6 +30,7 @@ namespace scheduler
 
 			std::future<void> run(const job &currentJob, resource &currentResource)
 			{
+				currentResource.set_in_use(true);
 				std::future<void> future = std::async(std::launch::async, &resource::run, currentResource, currentJob);
 
 				return future;
@@ -40,9 +41,9 @@ namespace scheduler
 		struct assigner : std::binary_function < resource, job, bool>
 		{
 			typedef assigner type;
-			bool operator() (const resource &currentResource, const job &currentJob) const
+			bool operator() (resource &currentResource, const job &currentJob) const
 			{
-				return ((!currentResource.used) && (currentJob.units_needed <= currentResource.units_available));
+				return ((!currentResource.is_in_use()) && (currentJob.units_needed <= currentResource.units_available));
 			}
 		};
 	}

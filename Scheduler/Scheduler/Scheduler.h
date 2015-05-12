@@ -30,11 +30,9 @@ namespace scheduler
 
 		std::list<std::future<void>> _futures;
 
-		resourceStream::const_iterator assign(const job currentJob)
+		resourceStream::iterator assign(const job currentJob)
 		{
-			bool assigned = false;
-
-			resourceStream::const_iterator resourceIterator = std::find_if(_resources.begin(),
+			resourceStream::iterator resourceIterator = std::find_if(_resources.begin(),
 				_resources.end(),
 				std::bind2nd(assignment(), currentJob));
 
@@ -64,7 +62,7 @@ namespace scheduler
 				job currentJob = _jobs.front();
 				_jobs.pop_front();
 
-				resourceStream::const_iterator resourceIterator = assign(currentJob);
+				resourceStream::iterator resourceIterator = assign(currentJob);
 				while (resourceIterator == _resources.end())
 				{
 					_jobs.push_back(currentJob);
@@ -72,7 +70,7 @@ namespace scheduler
 					_jobs.pop_front();
 				}
 
-				resource currentResource = *resourceIterator;
+				resource &currentResource = *resourceIterator;
 				_futures.push_back(_runner.run(currentJob, currentResource));
 			}
 		}
