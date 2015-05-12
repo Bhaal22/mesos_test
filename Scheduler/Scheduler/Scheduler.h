@@ -4,10 +4,21 @@
 #include <cstdio>
 #include <list>
 
+#include <algorithm>
+#include <functional>
+
 #include "Resource.h"
 
 namespace scheduler
 {
+	struct assigner : std::binary_function<resource, job, bool>
+	{
+		bool operator() (const resource &currentResource, const job &currentJob) const
+		{
+			return true;
+		}
+	};
+
 	class Scheduler
 	{
 	public:
@@ -30,7 +41,24 @@ namespace scheduler
 
 		void assign()
 		{
+			job currentJob = _jobs.front();
+			_jobs.pop_front();
 
+
+			//_resources.remove_if()
+			resourceStream::const_iterator res = std::find_if(_resources.begin(),
+															  _resources.end(),
+															  std::bind2nd(assigner(), currentJob));
+
+			if (res != _resources.end())
+			{
+
+			}
+			else
+			{
+				//job cannot be run currently
+				//pass to next job
+			}
 		}
 	};
 }
